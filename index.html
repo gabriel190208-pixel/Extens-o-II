@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sultech - Portal de Levantamento de Requisitos</title>
+  <style>
+    :root {
+      --primary: #0f3d68;
+      --secondary: #1e6bb8;
+      --success: #198754;
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --text: #333333;
+    }
+
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); margin: 0; padding: 0; }
+
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    header h1 { margin: 0; font-size: 1.5rem; }
+    header p { margin: 5px 0 0; font-size: 0.9rem; opacity: 0.85; }
+
+    .container {
+      max-width: 900px;
+      margin: 25px auto;
+      padding: 0 15px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 8px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: var(--primary);
+      border-bottom: 2px solid var(--bg);
+      padding-bottom: 10px;
+      font-size: 1.2rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+
+    .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+    label { font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; }
+    input, select, textarea {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 0.95rem;
+    }
+
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 5px;
+    }
+    .checkbox-item {
+      background: var(--bg);
+      padding: 10px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    button {
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover { background-color: var(--primary); }
+    button.btn-success { background-color: var(--success); }
+    button.btn-success:hover { background-color: #146c43; }
+
+    /* Área do Documento Gerado */
+    #escopo-gerado { display: none; border-left: 5px solid var(--secondary); }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      background: #fff3cd;
+      color: #856404;
+    }
+    .badge.aprovado { background: #d1e7dd; color: #0f5132; }
+
+    .req-list { background: var(--bg); padding: 15px; border-radius: 5px; margin: 15px 0; }
+    .req-list ul { margin: 5px 0 0; padding-left: 20px; }
+
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+
+    @media print {
+      header, #form-card, .actions { display: none !important; }
+      #escopo-gerado { display: block !important; box-shadow: none; border: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Sultech Sistemas | Engenharia de Requisitos</h1>
+    <p>Portal de Levantamento de Escopo e Aceite de Implantação (Francisco Beltrão - PR)</p>
+  </header>
+
+  <div class="container">
+    <!-- Formulário de Elicitação (RF01) -->
+    <div class="card" id="form-card">
+      <h2>1. Coleta de Requisitos do Cliente (Implantação)</h2>
+      <form id="reqForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="empresa">Nome da Empresa Cliente *</label>
+            <input type="text" id="empresa" placeholder="Ex: Comércio Sudoeste Ltda" required>
+          </div>
+          <div class="form-group">
+            <label for="responsavel">Responsável pelo Aceite (Cliente) *</label>
+            <input type="text" id="responsavel" placeholder="Ex: João da Silva (Gerente)" required>
+          </div>
+          <div class="form-group">
+            <label for="analista">Analista de Implantação (Sultech) *</label>
+            <input type="text" id="analista" placeholder="Seu nome" required>
+          </div>
+          <div class="form-group">
+            <label for="ramo">Segmento de Atuação</label>
+            <select id="ramo">
+              <option value="Comércio Varejista">Comércio Varejista</option>
+              <option value="Prestação de Serviços">Prestação de Serviços</option>
+              <option value="Indústria / Distribuidora">Indústria / Distribuidora</option>
+              <option value="Supermercado / Atacado">Supermercado / Atacado</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Módulos Contratados (RF01):</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" name="modulo" value="Frente de Caixa (PDV / NFC-e)" checked> Frente de Caixa (PDV)</label>
+            <label class="checkbox-item"><input type="checkbox" name="modulo" value="Controle de Estoque e Compras" checked> Estoque e Compras</label>
+            <label class="checkbox-item"><input type="checkbox" name="modulo" value="Financeiro (Contas a Pagar/Receber)"> Financeiro / Boletos</label>
+            <label class="checkbox-item"><input type="checkbox" name="modulo" value="Emissão Fiscal (NF-e / MDF-e)"> Fiscal (NF-e / MDF-e)</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="regras">Requisitos Específicos e Regras de Negócio *</label>
+          <textarea id="regras" rows="4" placeholder="Descreva regras de comissão, tributação específica, controle de lote, limite de crédito, etc." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="prioridade">Prioridade de Entrega / Go-Live</label>
+          <select id="prioridade">
+            <option value="Normal (15 dias)">Normal (15 dias)</option>
+            <option value="Alta (7 dias)">Alta (7 dias)</option>
+            <option value="Urgente (Virada de mês)">Urgente (Virada de mês)</option>
+          </select>
+        </div>
+
+        <button type="submit">Gerar Documento de Requisitos</button>
+      </form>
+    </div>
+
+    <!-- Documento Gerado e Validação (RF02) -->
+    <div class="card" id="escopo-gerado">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <h2 style="border: none; margin: 0;">Documento de Especificação de Escopo</h2>
+        <span id="status-badge" class="badge">Aguardando Validação do Cliente</span>
+      </div>
+      <hr>
+
+      <p><strong>Cliente:</strong> <span id="out-empresa"></span> (<span id="out-ramo"></span>)</p>
+      <p><strong>Responsável pela Aprovação:</strong> <span id="out-responsavel"></span></p>
+      <p><strong>Analista Sultech:</strong> <span id="out-analista"></span> | <strong>Prazo:</strong> <span id="out-prioridade"></span></p>
+
+      <div class="req-list">
+        <strong>Módulos Parametrizados (Escopo Funcional):</strong>
+        <ul id="out-modulos"></ul>
+      </div>
+
+      <div class="req-list">
+        <strong>Regras de Negócio Levantadas:</strong>
+        <p id="out-regras" style="white-space: pre-line; margin-bottom: 0;"></p>
+      </div>
+
+      <p id="registro-aceite" style="font-size: 0.85rem; color: #198754; font-weight: bold;"></p>
+
+      <div class="actions">
+        <button type="button" class="btn-success" id="btn-aprovar" onclick="aprovarEscopo()">Registrar Aceite Digital do Cliente</button>
+        <button type="button" onclick="window.print()">Exportar / Imprimir PDF (RF02)</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('reqForm');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Captura dados
+      document.getElementById('out-empresa').textContent = document.getElementById('empresa').value;
+      document.getElementById('out-responsavel').textContent = document.getElementById('responsavel').value;
+      document.getElementById('out-analista').textContent = document.getElementById('analista').value;
+      document.getElementById('out-ramo').textContent = document.getElementById('ramo').value;
+      document.getElementById('out-prioridade').textContent = document.getElementById('prioridade').value;
+      document.getElementById('out-regras').textContent = document.getElementById('regras').value;
+
+      // Captura módulos selecionados
+      const checkboxes = document.querySelectorAll('input[name="modulo"]:checked');
+      const listaModulos = document.getElementById('out-modulos');
+      listaModulos.innerHTML = '';
+
+      if (checkboxes.length === 0) {
+        listaModulos.innerHTML = '<li>Nenhum módulo específico selecionado.</li>';
+      } else {
+        checkboxes.forEach(cb => {
+          const li = document.createElement('li');
+          li.textContent = cb.value;
+          listaModulos.appendChild(li);
+        });
+      }
+
+      // Reseta status de aceite
+      const badge = document.getElementById('status-badge');
+      badge.textContent = 'Aguardando Validação do Cliente';
+      badge.className = 'badge';
+      document.getElementById('registro-aceite').textContent = '';
+      document.getElementById('btn-aprovar').style.display = 'inline-block';
+
+      // Exibe resultado
+      const cardEscopo = document.getElementById('escopo-gerado');
+      cardEscopo.style.display = 'block';
+      cardEscopo.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    function aprovarEscopo() {
+      const responsavel = document.getElementById('out-responsavel').textContent;
+      const agora = new Date().toLocaleString('pt-BR');
+
+      const badge = document.getElementById('status-badge');
+      badge.textContent = 'Escopo Validado e Aprovado';
+      badge.className = 'badge aprovado';
+
+      document.getElementById('registro-aceite').textContent = 
+        `✔ Escopo validado digitalmente por ${responsavel} em ${agora}. Liberado para configuração técnica na Sultech.`;
+      
+      document.getElementById('btn-aprovar').style.display = 'none';
+    }
+  </script>
+
+</body>
+</html>
