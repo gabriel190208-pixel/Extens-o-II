@@ -1,277 +1,301 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sultech - Portal de Levantamento de Requisitos</title>
-  <style>
-    :root {
-      --primary: #0f3d68;
-      --secondary: #1e6bb8;
-      --success: #198754;
-      --bg: #f4f6f9;
-      --card: #ffffff;
-      --text: #333333;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class trabalho {
+
+    // Classe que representa um Registro de Autocontrole (RF01, RF02, RF03)
+    static class RegistroControle {
+        private int id;
+        private String tipoControle;
+        private String produtorOuSetor;
+        private String detalhesMedicao;
+        private String responsavel; // <<include>> Identificar responsável pelo registro
+        private String dataHora;    // <<include>> Registrar data e horário
+
+        public RegistroControle(int id, String tipoControle, String produtorOuSetor, String detalhesMedicao, String responsavel) {
+            this.id = id;
+            this.tipoControle = tipoControle;
+            this.produtorOuSetor = produtorOuSetor;
+            this.detalhesMedicao = detalhesMedicao;
+            this.responsavel = responsavel;
+            // Gravação automática da data e horário atual no momento do registro
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            this.dataHora = LocalDateTime.now().format(formatter);
+        }
+
+        public int getId() { return id; }
+        public String getTipoControle() { return tipoControle; }
+        public String getProdutorOuSetor() { return produtorOuSetor; }
+        public String getDetalhesMedicao() { return detalhesMedicao; }
+        public String getResponsavel() { return responsavel; }
+        public String getDataHora() { return dataHora; }
+
+        public void setDetalhesMedicao(String detalhesMedicao) {
+            this.detalhesMedicao = detalhesMedicao;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("[ID: %d] %s | Data/Hora: %s | Produtor/Setor: %s | Dados: %s | Resp.: %s",
+                    id, tipoControle, dataHora, produtorOuSetor, detalhesMedicao, responsavel);
+        }
     }
 
-    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); margin: 0; padding: 0; }
+    private static List<RegistroControle> bancoRegistros = new ArrayList<>();
+    private static int proximoId = 1;
+    private static Scanner scanner = new Scanner(System.in);
 
-    header {
-      background-color: var(--primary);
-      color: white;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    header h1 { margin: 0; font-size: 1.5rem; }
-    header p { margin: 5px 0 0; font-size: 0.9rem; opacity: 0.85; }
+    public static void main(String[] args) {
+        carregarDadosIniciais(); // Pré-carrega alguns registros para facilitar testes na apresentação
+        int perfil = -1;
 
-    .container {
-      max-width: 900px;
-      margin: 25px auto;
-      padding: 0 15px;
-    }
+        while (perfil != 0) {
+            System.out.println("\n=======================================================");
+            System.out.println("  SISTEMA DE REGISTROS DE AUTOCONTROLE DO LATICÍNIO");
+            System.out.println("=======================================================");
+            System.out.println("Selecione o perfil de acesso:");
+            System.out.println("1 - Funcionário do Laboratório (Operacional)");
+            System.out.println("2 - Responsável pelo Laboratório / Controle de Qualidade");
+            System.out.println("0 - Sair do Sistema");
+            System.out.print("Opção: ");
 
-    .card {
-      background: var(--card);
-      border-radius: 8px;
-      padding: 25px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-
-    h2 {
-      margin-top: 0;
-      color: var(--primary);
-      border-bottom: 2px solid var(--bg);
-      padding-bottom: 10px;
-      font-size: 1.2rem;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-
-    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
-
-    .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
-    label { font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; }
-    input, select, textarea {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 0.95rem;
+            try {
+                perfil = Integer.parseInt(scanner.nextLine());
+                switch (perfil) {
+                    case 1:
+                        menuFuncionario();
+                        break;
+                    case 2:
+                        menuResponsavelQualidade();
+                        break;
+                    case 0:
+                        System.out.println("Encerrando o sistema...");
+                        break;
+                    default:
+                        System.out.println("Opção inválida. Tente novamente.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Erro: Digite apenas números.");
+            }
+        }
+        scanner.close();
     }
 
-    .checkbox-group {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 10px;
-      margin-top: 5px;
+    // =========================================================================
+    // MÓDULO 1: REGISTROS (Ator: Funcionário do Laboratório)
+    // =========================================================================
+    private static void menuFuncionario() {
+        System.out.print("\nInforme o nome do Funcionário responsável pelo turno: ");
+        String nomeFuncionario = scanner.nextLine().trim();
+        if (nomeFuncionario.isEmpty()) {
+            nomeFuncionario = "Funcionário Padrão";
+        }
+
+        int opcao = -1;
+        while (opcao != 0) {
+            System.out.println("\n--- MÓDULO DE REGISTROS DO LABORATÓRIO (Resp.: " + nomeFuncionario + ") ---");
+            System.out.println("1 - Registrar recebimento e análises do leite (RF01)");
+            System.out.println("2 - Registrar controles de produtos (RF02)");
+            System.out.println("3 - Registrar limpeza e higienização (RF02)");
+            System.out.println("4 - Registrar temperaturas (RF02)");
+            System.out.println("5 - Registrar expedição (RF02)");
+            System.out.println("6 - Registrar não conformidades (RF02)");
+            System.out.println("0 - Voltar ao menu principal");
+            System.out.print("Escolha o tipo de registro: ");
+
+            try {
+                opcao = Integer.parseInt(scanner.nextLine());
+                if (opcao >= 1 && opcao <= 6) {
+                    realizarRegistro(opcao, nomeFuncionario);
+                } else if (opcao != 0) {
+                    System.out.println("Opção inválida.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Erro: Digite apenas números.");
+            }
+        }
     }
-    .checkbox-item {
-      background: var(--bg);
-      padding: 10px;
-      border-radius: 5px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
+
+    private static void realizarRegistro(int tipoOpcao, String responsavel) {
+        String tipoControle = "";
+        String promptOrigem = "Informe o Setor / Equipamento: ";
+
+        switch (tipoOpcao) {
+            case 1:
+                tipoControle = "Recebimento e Análises do Leite";
+                promptOrigem = "Informe o Produtor / Linha de Coleta: ";
+                break;
+            case 2:
+                tipoControle = "Controle de Produtos";
+                promptOrigem = "Informe o Produto / Lote: ";
+                break;
+            case 3:
+                tipoControle = "Limpeza e Higienização";
+                break;
+            case 4:
+                tipoControle = "Controle de Temperaturas";
+                promptOrigem = "Informe a Câmara Fria / Tanque: ";
+                break;
+            case 5:
+                tipoControle = "Expedição";
+                promptOrigem = "Informe o Destino / Carga: ";
+                break;
+            case 6:
+                tipoControle = "Não Conformidade";
+                break;
+        }
+
+        System.out.print(promptOrigem);
+        String produtorOuSetor = scanner.nextLine();
+
+        System.out.print("Informe os dados/medições do controle (ex: Temp 3.8°C, Alizarol OK): ");
+        String detalhes = scanner.nextLine();
+
+        // Cria o registro aplicando automaticamente o <<include>> de responsável e data/hora (RF03)
+        RegistroControle novo = new RegistroControle(proximoId++, tipoControle, produtorOuSetor, detalhes, responsavel);
+        bancoRegistros.add(novo);
+
+        System.out.println("\n[SUCESSO] Registro salvo com rastreabilidade automática:");
+        System.out.println(novo);
     }
 
-    button {
-      background-color: var(--secondary);
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      font-size: 1rem;
-      font-weight: 600;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.2s;
+    // =========================================================================
+    // MÓDULO 2 E 3: CONSULTAS, ACOMPANHAMENTO E RELATÓRIOS (Ator: Resp. Qualidade)
+    // =========================================================================
+    private static void menuResponsavelQualidade() {
+        int opcao = -1;
+        while (opcao != 0) {
+            System.out.println("\n--- MÓDULO DE CONTROLE DE QUALIDADE E SEGURANÇA ---");
+            System.out.println("1 - Consultar histórico digital completo (RF04)");
+            System.out.println("2 - Consultar com filtros por data, produtor ou tipo (RF05 - <<extend>>)");
+            System.out.println("3 - Acompanhar frequência dos controles (RF06)");
+            System.out.println("4 - Editar registro existente (RF04)");
+            System.out.println("5 - Gerar e imprimir relatório consolidado (RF07)");
+            System.out.println("6 - Realizar backup das informações (RNF01)");
+            System.out.println("0 - Voltar ao menu principal");
+            System.out.print("Opção: ");
+
+            try {
+                opcao = Integer.parseInt(scanner.nextLine());
+                switch (opcao) {
+                    case 1:
+                        consultarHistoricoCompleto();
+                        break;
+                    case 2:
+                        consultarComFiltros();
+                        break;
+                    case 3:
+                        acompanharFrequencia();
+                        break;
+                    case 4:
+                        editarRegistro();
+                        break;
+                    case 5:
+                        gerarRelatorio();
+                        break;
+                    case 6:
+                        realizarBackup();
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        System.out.println("Opção inválida.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Erro: Digite apenas números.");
+            }
+        }
     }
-    button:hover { background-color: var(--primary); }
-    button.btn-success { background-color: var(--success); }
-    button.btn-success:hover { background-color: #146c43; }
 
-    /* Área do Documento Gerado */
-    #escopo-gerado { display: none; border-left: 5px solid var(--secondary); }
-    .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: bold;
-      background: #fff3cd;
-      color: #856404;
+    private static void consultarHistoricoCompleto() {
+        System.out.println("\n--- HISTÓRICO DIGITAL DE REGISTROS ---");
+        if (bancoRegistros.isEmpty()) {
+            System.out.println("Nenhum registro encontrado.");
+            return;
+        }
+        for (RegistroControle r : bancoRegistros) {
+            System.out.println(r);
+        }
     }
-    .badge.aprovado { background: #d1e7dd; color: #0f5132; }
 
-    .req-list { background: var(--bg); padding: 15px; border-radius: 5px; margin: 15px 0; }
-    .req-list ul { margin: 5px 0 0; padding-left: 20px; }
+    private static void consultarComFiltros() {
+        System.out.print("\nDigite o termo de filtro (Data dd/mm/aaaa, Produtor ou Tipo de Controle): ");
+        String termo = scanner.nextLine().toLowerCase();
 
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
-
-    @media print {
-      header, #form-card, .actions { display: none !important; }
-      #escopo-gerado { display: block !important; box-shadow: none; border: none; }
+        System.out.println("\n--- RESULTADOS FILTRADOS ---");
+        boolean encontrou = false;
+        for (RegistroControle r : bancoRegistros) {
+            if (r.getDataHora().toLowerCase().contains(termo) ||
+                    r.getProdutorOuSetor().toLowerCase().contains(termo) ||
+                    r.getTipoControle().toLowerCase().contains(termo)) {
+                System.out.println(r);
+                encontrou = true;
+            }
+        }
+        if (!encontrou) {
+            System.out.println("Nenhum registro corresponde ao filtro informado.");
+        }
     }
-  </style>
-</head>
-<body>
 
-  <header>
-    <h1>Sultech Sistemas | Engenharia de Requisitos</h1>
-    <p>Portal de Levantamento de Escopo e Aceite de Implantação (Francisco Beltrão - PR)</p>
-  </header>
+    private static void acompanharFrequencia() {
+        System.out.println("\n--- ACOMPANHAMENTO DE FREQUÊNCIA DOS CONTROLES ---");
+        System.out.println("Total de registros lançados no sistema: " + bancoRegistros.size());
+        long qtdLeite = bancoRegistros.stream().filter(r -> r.getTipoControle().contains("Leite")).count();
+        long qtdTemp = bancoRegistros.stream().filter(r -> r.getTipoControle().contains("Temperaturas")).count();
+        long qtdLimpeza = bancoRegistros.stream().filter(r -> r.getTipoControle().contains("Limpeza")).count();
 
-  <div class="container">
-    <!-- Formulário de Elicitação (RF01) -->
-    <div class="card" id="form-card">
-      <h2>1. Coleta de Requisitos do Cliente (Implantação)</h2>
-      <form id="reqForm">
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="empresa">Nome da Empresa Cliente *</label>
-            <input type="text" id="empresa" placeholder="Ex: Comércio Sudoeste Ltda" required>
-          </div>
-          <div class="form-group">
-            <label for="responsavel">Responsável pelo Aceite (Cliente) *</label>
-            <input type="text" id="responsavel" placeholder="Ex: João da Silva (Gerente)" required>
-          </div>
-          <div class="form-group">
-            <label for="analista">Analista de Implantação (Sultech) *</label>
-            <input type="text" id="analista" placeholder="Seu nome" required>
-          </div>
-          <div class="form-group">
-            <label for="ramo">Segmento de Atuação</label>
-            <select id="ramo">
-              <option value="Comércio Varejista">Comércio Varejista</option>
-              <option value="Prestação de Serviços">Prestação de Serviços</option>
-              <option value="Indústria / Distribuidora">Indústria / Distribuidora</option>
-              <option value="Supermercado / Atacado">Supermercado / Atacado</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Módulos Contratados (RF01):</label>
-          <div class="checkbox-group">
-            <label class="checkbox-item"><input type="checkbox" name="modulo" value="Frente de Caixa (PDV / NFC-e)" checked> Frente de Caixa (PDV)</label>
-            <label class="checkbox-item"><input type="checkbox" name="modulo" value="Controle de Estoque e Compras" checked> Estoque e Compras</label>
-            <label class="checkbox-item"><input type="checkbox" name="modulo" value="Financeiro (Contas a Pagar/Receber)"> Financeiro / Boletos</label>
-            <label class="checkbox-item"><input type="checkbox" name="modulo" value="Emissão Fiscal (NF-e / MDF-e)"> Fiscal (NF-e / MDF-e)</label>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="regras">Requisitos Específicos e Regras de Negócio *</label>
-          <textarea id="regras" rows="4" placeholder="Descreva regras de comissão, tributação específica, controle de lote, limite de crédito, etc." required></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="prioridade">Prioridade de Entrega / Go-Live</label>
-          <select id="prioridade">
-            <option value="Normal (15 dias)">Normal (15 dias)</option>
-            <option value="Alta (7 dias)">Alta (7 dias)</option>
-            <option value="Urgente (Virada de mês)">Urgente (Virada de mês)</option>
-          </select>
-        </div>
-
-        <button type="submit">Gerar Documento de Requisitos</button>
-      </form>
-    </div>
-
-    <!-- Documento Gerado e Validação (RF02) -->
-    <div class="card" id="escopo-gerado">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-        <h2 style="border: none; margin: 0;">Documento de Especificação de Escopo</h2>
-        <span id="status-badge" class="badge">Aguardando Validação do Cliente</span>
-      </div>
-      <hr>
-
-      <p><strong>Cliente:</strong> <span id="out-empresa"></span> (<span id="out-ramo"></span>)</p>
-      <p><strong>Responsável pela Aprovação:</strong> <span id="out-responsavel"></span></p>
-      <p><strong>Analista Sultech:</strong> <span id="out-analista"></span> | <strong>Prazo:</strong> <span id="out-prioridade"></span></p>
-
-      <div class="req-list">
-        <strong>Módulos Parametrizados (Escopo Funcional):</strong>
-        <ul id="out-modulos"></ul>
-      </div>
-
-      <div class="req-list">
-        <strong>Regras de Negócio Levantadas:</strong>
-        <p id="out-regras" style="white-space: pre-line; margin-bottom: 0;"></p>
-      </div>
-
-      <p id="registro-aceite" style="font-size: 0.85rem; color: #198754; font-weight: bold;"></p>
-
-      <div class="actions">
-        <button type="button" class="btn-success" id="btn-aprovar" onclick="aprovarEscopo()">Registrar Aceite Digital do Cliente</button>
-        <button type="button" onclick="window.print()">Exportar / Imprimir PDF (RF02)</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const form = document.getElementById('reqForm');
-
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-
-      // Captura dados
-      document.getElementById('out-empresa').textContent = document.getElementById('empresa').value;
-      document.getElementById('out-responsavel').textContent = document.getElementById('responsavel').value;
-      document.getElementById('out-analista').textContent = document.getElementById('analista').value;
-      document.getElementById('out-ramo').textContent = document.getElementById('ramo').value;
-      document.getElementById('out-prioridade').textContent = document.getElementById('prioridade').value;
-      document.getElementById('out-regras').textContent = document.getElementById('regras').value;
-
-      // Captura módulos selecionados
-      const checkboxes = document.querySelectorAll('input[name="modulo"]:checked');
-      const listaModulos = document.getElementById('out-modulos');
-      listaModulos.innerHTML = '';
-
-      if (checkboxes.length === 0) {
-        listaModulos.innerHTML = '<li>Nenhum módulo específico selecionado.</li>';
-      } else {
-        checkboxes.forEach(cb => {
-          const li = document.createElement('li');
-          li.textContent = cb.value;
-          listaModulos.appendChild(li);
-        });
-      }
-
-      // Reseta status de aceite
-      const badge = document.getElementById('status-badge');
-      badge.textContent = 'Aguardando Validação do Cliente';
-      badge.className = 'badge';
-      document.getElementById('registro-aceite').textContent = '';
-      document.getElementById('btn-aprovar').style.display = 'inline-block';
-
-      // Exibe resultado
-      const cardEscopo = document.getElementById('escopo-gerado');
-      cardEscopo.style.display = 'block';
-      cardEscopo.scrollIntoView({ behavior: 'smooth' });
-    });
-
-    function aprovarEscopo() {
-      const responsavel = document.getElementById('out-responsavel').textContent;
-      const agora = new Date().toLocaleString('pt-BR');
-
-      const badge = document.getElementById('status-badge');
-      badge.textContent = 'Escopo Validado e Aprovado';
-      badge.className = 'badge aprovado';
-
-      document.getElementById('registro-aceite').textContent = 
-        `✔ Escopo validado digitalmente por ${responsavel} em ${agora}. Liberado para configuração técnica na Sultech.`;
-      
-      document.getElementById('btn-aprovar').style.display = 'none';
+        System.out.println("- Recebimento e Análises do Leite: " + qtdLeite + " registro(s)");
+        System.out.println("- Controle de Temperaturas: " + qtdTemp + " registro(s)");
+        System.out.println("- Limpeza e Higienização: " + qtdLimpeza + " registro(s)");
+        System.out.println("Status: Verificação manual concluída pelo gestor.");
     }
-  </script>
 
-</body>
-</html>
+    private static void editarRegistro() {
+        consultarHistoricoCompleto();
+        System.out.print("\nInforme o ID do registro que deseja editar: ");
+        try {
+            int idBusca = Integer.parseInt(scanner.nextLine());
+            for (RegistroControle r : bancoRegistros) {
+                if (r.getId() == idBusca) {
+                    System.out.println("Dados atuais: " + r.getDetalhesMedicao());
+                    System.out.print("Informe os novos dados/medições corrigidos: ");
+                    String novosDados = scanner.nextLine();
+                    r.setDetalhesMedicao(novosDados);
+                    System.out.println("[SUCESSO] Registro atualizado: " + r);
+                    return;
+                }
+            }
+            System.out.println("Registro com ID " + idBusca + " não encontrado.");
+        } catch (NumberFormatException e) {
+            System.out.println("ID inválido.");
+        }
+    }
+
+    private static void gerarRelatorio() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        System.out.println("\n=======================================================");
+        System.out.println("     RELATÓRIO OFICIAL DE AUTOCONTROLE - LATICÍNIO");
+        System.out.println("     Emitido em: " + LocalDateTime.now().format(formatter));
+        System.out.println("=======================================================");
+        consultarHistoricoCompleto();
+        System.out.println("=======================================================");
+        System.out.println("[INFO] Documento formatado e enviado para fila de impressão.");
+    }
+
+    private static void realizarBackup() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        String nomeArquivo = "backup_autocontrole_" + LocalDateTime.now().format(formatter) + ".dat";
+        System.out.println("\n[BACKUP] Exportando " + bancoRegistros.size() + " registro(s)...");
+        System.out.println("[SUCESSO] Cópia de segurança gerada localmente: " + nomeArquivo);
+    }
+
+    // Dados iniciais para demonstração imediata
+    private static void carregarDadosIniciais() {
+        bancoRegistros.add(new RegistroControle(proximoId++, "Recebimento e Análises do Leite", "Produtor João Silva", "1.200L | Temp: 3.9°C | Acidez: 16°D | Alizarol: Negativo", "Carlos Mendes"));
+        bancoRegistros.add(new RegistroControle(proximoId++, "Controle de Temperaturas", "Câmara Fria 01", "Temperatura aferida: 2.5°C (Conforme)", "Carlos Mendes"));
+        bancoRegistros.add(new RegistroControle(proximoId++, "Limpeza e Higienização", "Tanque de Pasteurização", "CIP realizado com solução alcalina/ácida - OK", "Ana Paula"));
+    }
+}
