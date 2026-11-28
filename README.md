@@ -1,7 +1,6 @@
 RELATÓRIO FINAL – TESTE, VALIDAÇÃO E CONCLUSÃO
 
-Projeto de Extensão
-
+Projeto de Extensão:
 Laboratório de Laticínio
 
 Integrantes:
