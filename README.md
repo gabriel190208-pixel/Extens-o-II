@@ -13,6 +13,7 @@ Gabriel Pizatto Thomas – RA: 60020832
 
 ------------------------------------------------------------------------------------------------------------------------------
 1. Contextualização e Resumo da Solução
+   
 O presente projeto teve como objetivo digitalizar e centralizar os registros de autocontrole do laboratório de um laticínio, substituindo
 o controle manual baseado em papéis e planilhas dispersas. A solução modelada e implementada em protótipo contempla três módulos principais:
  
@@ -27,6 +28,7 @@ auditoria, além de rotina de backup das informações.
 
 ------------------------------------------------------------------------------------------------------------------------------ 
 2. Testes, Validação e Avaliação de Satisfação
+   
 Foram executados testes funcionais de fluxo com base nos casos de uso modelados e no protótipo desenvolvido, acompanhados de sessões
  de validação junto à equipe e à gerência do laticínio:
 
@@ -45,6 +47,7 @@ contra extravio de documentos físicos e a agilidade na consulta de dados antigo
 
 ------------------------------------------------------------------------------------------------------------------------------
 3. Matriz de Atendimento dos Requisitos
+   
 ID	Requisito / Caso de Uso	Ator Principal	Status de Atendimento	Observações da Validação
 
 RF01	Registrar recebimento e análises do leite	Funcionário do Laboratório	Atendido completamente	Fluxo modelado e validado no
@@ -73,6 +76,7 @@ aguardando automatização em nuvem na implantação final.
 
 ------------------------------------------------------------------------------------------------------------------------------
 4. Limitações Identificadas e Sugestões de Melhoria
+   
 Durante a validação da arquitetura e dos testes com o protótipo, identificaram-se limitações técnicas que originaram as seguintes propostas
 de melhoria para versões futuras do sistema:
 
