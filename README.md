@@ -1,10 +1,15 @@
 RELATÓRIO FINAL – TESTE, VALIDAÇÃO E CONCLUSÃO
+
 Projeto de Extensão
+
 Laboratório de Laticínio
 
 Integrantes:
+
 Frederico Antonio Suzzin Rozin – RA: 60013940
+
 João Victor Francescon – RA: 60013919
+
 Gabriel Pizatto Thomas – RA: 60020832 
 
 ------------------------------------------------------------------------------------------------------------------------------
